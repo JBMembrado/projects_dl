@@ -13,10 +13,10 @@ from torch.nn import functional as F
 
 import dlc_practical_prologue as prologue
 
-n_pairs = 1000
+N_PAIRS = 1000
 
 train_input, train_target, train_classes, test_input, test_target, test_classes = \
-    prologue.generate_pair_sets(n_pairs)
+    prologue.generate_pair_sets(N_PAIRS)
 
 N = train_input.size(0)
 
@@ -69,7 +69,7 @@ def train_model(model, train_input, train_target, test_input, test_target, mini_
         print("Percentage of errors  on the test = ",
               compute_nb_errors(model, test_input, test_target, mini_batch_size))
 
-    return (output, sum_loss)
+    return output, sum_loss
 
 
 # Test error
@@ -84,14 +84,3 @@ def compute_nb_errors(model, input_data, target, mini_batch_size):
         nb_errors += torch.sum(predictions.long() != target_labels.long()).item()
 
     return nb_errors * 100 / (input_data.size(0))
-
-
-
-
-
-
-
-
-
-
-
