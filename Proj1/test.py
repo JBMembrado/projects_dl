@@ -20,6 +20,7 @@ train_input, train_target, train_classes, test_input, test_target, test_classes 
 
 N = train_input.size(0)
 
+
 train_target = torch.tensor([[1, 0] if train_target[i] == 0 else [0, 1] for i in range(N)])
 test_target = torch.tensor([[1, 0] if test_target[i] == 0 else [0, 1] for i in range(N)])
 
