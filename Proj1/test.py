@@ -57,6 +57,7 @@ class Net(nn.Module):
         return float(nb_errors) * 100 / input_data.size(0)
 
 
+""" Load Data """
 N_PAIRS = 1000
 
 train_input, train_target, train_classes, test_input, test_target, test_classes = \
@@ -64,19 +65,12 @@ train_input, train_target, train_classes, test_input, test_target, test_classes 
 
 N = train_input.size(0)
 
-#train_target = torch.tensor([[1, 0] if train_target[i] == 0 else [0, 1] for i in range(N)])
-#test_target = torch.tensor([[1, 0] if test_target[i] == 0 else [0, 1] for i in range(N)])
-
 train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
+""" Create and train model """
 my_model = Net()
-mini_batch_size = 100
-"""
-mu, std = train_input.mean(0), train_input.std(0)
-train_input.sub_(mu).div_(std)
-test_input.sub_(mu).div_(std)
-"""
+
 my_model.train(train_input, train_target)
 print("Train error : %.1f%% \nTest error : %.1f%%" %
       (my_model.nb_errors(train_input, train_target),
