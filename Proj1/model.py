@@ -6,8 +6,8 @@ from torch.nn import functional as F
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv = nn.Conv2d(2, 32, kernel_size=5)
-        self.fc1 = nn.Linear(128, 256)
+        self.conv = nn.Conv2d(2, 64, kernel_size=5)
+        self.fc1 = nn.Linear(256, 256)
         self.fc2 = nn.Linear(256, 2)
 
         self.mini_batch_size = 100
@@ -17,7 +17,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
-        x = F.relu(self.fc1(x.view(-1, 128)))
+        x = F.relu(self.fc1(x.view(-1, 256)))
         x = self.fc2(x)
         return x
 
