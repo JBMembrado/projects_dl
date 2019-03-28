@@ -17,8 +17,6 @@ N_PAIRS = 1000
 train_input, train_target, train_classes, test_input, test_target, test_classes = \
     prologue.generate_pair_sets(N_PAIRS)
 
-N = train_input.size(0)
-
 train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
