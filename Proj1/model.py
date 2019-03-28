@@ -11,9 +11,9 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(256, 2)
 
         self.mini_batch_size = 100
-        self.eta = 1e-3
         self.criterion = nn.CrossEntropyLoss()
         self.nb_epoch = 25
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
@@ -22,7 +22,7 @@ class Net(nn.Module):
         return x
 
     # Training Function
-    def train(self, train_input, train_target):
+    def trainer(self, train_input, train_target):
         """
         Train the model on a training set
         :param train_input: Training features
@@ -33,11 +33,10 @@ class Net(nn.Module):
             for b in range(0, train_input.size(0), self.mini_batch_size):
                 output = self(train_input.narrow(0, b, self.mini_batch_size))
                 loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
-                self.zero_grad()
+                self.optimizer.zero_grad()
                 loss.backward()
                 sum_loss = sum_loss + loss.item()
-                for p in self.parameters():
-                    p.data.sub_(self.eta * p.grad.data)
+                self.optimizer.step()
             print("Step %d : %f" % (e, sum_loss))
 
     # Test error

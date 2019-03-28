@@ -25,7 +25,7 @@ test_input, test_target = Variable(test_input), Variable(test_target)
 """ Create and train model """
 my_model = Net()
 
-my_model.train(train_input, train_target)
+my_model.trainer(train_input, train_target)
 print("Train error : %.1f%% \nTest error : %.1f%%" %
       (my_model.nb_errors(train_input, train_target),
        my_model.nb_errors(test_input, test_target)))
