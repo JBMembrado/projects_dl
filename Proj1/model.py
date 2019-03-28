@@ -21,12 +21,13 @@ class Net(nn.Module):
         x = self.fc2(x)
         return x
 
-class Net2(nn.Module):
+class Net_number(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv = nn.Conv2d(2, 64, kernel_size=5)
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=5)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=5)
         self.fc1 = nn.Linear(256, 256)
-        self.fc2 = nn.Linear(256, 2)
+        self.fc2 = nn.Linear(256, 10)
 
         self.mini_batch_size = 100
         self.criterion = nn.CrossEntropyLoss()
@@ -34,7 +35,8 @@ class Net2(nn.Module):
         self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=3, stride=3))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
         x = F.relu(self.fc1(x.view(-1, 256)))
         x = self.fc2(x)
         return x
@@ -57,7 +59,7 @@ class Net2(nn.Module):
                 self.optimizer.step()
             print("Step %d : %f" % (e, sum_loss))
     
-    def trainer2(self, train_input, train_target):
+    def trainer_number(self, train_input, train_target):
         """
         """
         for e in range(self.nb_epoch):
