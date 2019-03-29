@@ -9,6 +9,7 @@ Created on Wed Mar  6 10:36:43 2019
 from torch.autograd import Variable
 import dlc_practical_prologue as prologue
 from model import Net
+from model import Net_number
 
 
 """ Load Data """
@@ -21,16 +22,16 @@ train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
 """ Create and train model """
-my_model = Net()
-
-my_model.trainer(train_input, train_target)
-print("Train error : %.1f%% \nTest error : %.1f%%" %
-      (my_model.nb_errors(train_input, train_target),
-       my_model.nb_errors(test_input, test_target)))
+#my_model = Net()
+#
+#my_model.trainer(train_input, train_target)
+#print("Train error : %.1f%% \nTest error : %.1f%%" %
+#      (my_model.nb_errors(train_input, train_target),
+#       my_model.nb_errors(test_input, test_target)))
 
 """ Create and train model which identifies each number and then compares them """
-my_model = Net_number()
-my_model.trainer_number(train_input, train_target)
+my_model_number = Net_number()
+my_model_number.trainer_number(train_input, train_classes)
 print("Train error : %.1f%% \nTest error : %.1f%%" %
-      (my_model.nb_errors(train_input, train_target),
-       my_model.nb_errors(test_input, test_target)))
+      (my_model_number.nb_errors_number(train_input, train_target),
+       my_model_number.nb_errors_number(test_input, test_target)))
