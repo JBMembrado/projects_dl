@@ -86,17 +86,18 @@ class Net_number(nn.Module):
                 else:
                     train_target[i,j]=0
         #c'est moche mais je crois que ca marche. à changer.
+        train_target=train_target.long()
         print(train_target)
-#        for e in range(self.nb_epoch):
-#            sum_loss = 0
-#            for b in range(0, train_input.size(0), self.mini_batch_size):
-#                output = self(train_input.narrow(0, b, self.mini_batch_size))
-#                loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
-#                self.optimizer.zero_grad()
-#                loss.backward()
-#                sum_loss = sum_loss + loss.item()
-#                self.optimizer.step()
-#            print("Step %d : %f" % (e, sum_loss))
+        for e in range(self.nb_epoch):
+            sum_loss = 0
+            for b in range(0, train_input.size(0), self.mini_batch_size):
+                output = self(train_input.narrow(0, b, self.mini_batch_size))
+                loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
+                self.optimizer.zero_grad()
+                loss.backward()
+                sum_loss = sum_loss + loss.item()
+                self.optimizer.step()
+            print("Step %d : %f" % (e, sum_loss))
 
     # Test error
     def nb_errors_number(self, input_data, target):
@@ -110,18 +111,11 @@ class Net_number(nn.Module):
         input_data=input_data.view(2000,1,14,14)
         print(input_data.size())
         for b in range(0, input_data.size(0), self.mini_batch_size):
-            output = self(input_data.narrow(0, b, self.mini_batch_size))
-            _, predicted_classes = output.data.max(1)
-            print(predicted_classes)
-            print(predicted_classes.size())
-#            for k in range(self.mini_batch_size):
-#                nb_errors += torch.sum()
-#                    
-#                    
-#        nb_errors = 0
-#        for b in range(0, input_data.size(0), self.mini_batch_size):
-#            output = self(input_data.narrow(0, b, self.mini_batch_size))
-#            predictions = 0
-#            target_labels = target.narrow(0, b, self.mini_batch_size)
-#            nb_errors += torch.sum(predictions != target_labels)
+            number_output = self(input_data.narrow(0, b, self.mini_batch_size))
+            _, predicted_classes = number_output.data.max(1)
+            predicted_classes=predicted_classes.view(-1,2)
+            predicted_classes.size()
+            predictions= predicted_classes[:,0]<=predicted_classes[:,1]
+            target_labels = target.narrow(0, b, self.mini_batch_size)
+            nb_errors += torch.sum(predictions != target_labels)
         return float(nb_errors) * 100 / input_data.size(0)
