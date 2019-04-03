@@ -63,9 +63,9 @@ class Net_number(nn.Module):
         self.fc1 = nn.Linear(256, 256)
         self.fc2 = nn.Linear(256, 10)
         self.mini_batch_size = 100
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.MSELoss() #crossentropy camarchepo
         self.nb_epoch = 25
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
+        #self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
         
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
@@ -77,6 +77,7 @@ class Net_number(nn.Module):
     def trainer_number(self, train_input, train_classes):
         """
         """
+        lr=1e-4
         train_input=train_input.view(2000,1,14,14)
         train_target=torch.empty(2000,10)
         for i in range(2000):
@@ -86,17 +87,26 @@ class Net_number(nn.Module):
                 else:
                     train_target[i,j]=0
         #c'est moche mais je crois que ca marche. à changer.
-        train_target=train_target.long()
-        print(train_target)
+
+        #train_target=train_target.long()
+
         for e in range(self.nb_epoch):
             sum_loss = 0
             for b in range(0, train_input.size(0), self.mini_batch_size):
                 output = self(train_input.narrow(0, b, self.mini_batch_size))
                 loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
-                self.optimizer.zero_grad()
+                self.zero_grad()
                 loss.backward()
                 sum_loss = sum_loss + loss.item()
-                self.optimizer.step()
+                for p in self.parameters():
+                    p.data.sub_(lr * p.grad.data)
+                
+#                output = self(train_input.narrow(0, b, self.mini_batch_size))
+#                loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
+#                self.optimizer.zero_grad()
+#                loss.backward()
+#                sum_loss = sum_loss + loss.item()
+#                self.optimizer.step()
             print("Step %d : %f" % (e, sum_loss))
 
     # Test error
@@ -109,13 +119,11 @@ class Net_number(nn.Module):
         """
         nb_errors = 0
         input_data=input_data.view(2000,1,14,14)
-        print(input_data.size())
         for b in range(0, input_data.size(0), self.mini_batch_size):
             number_output = self(input_data.narrow(0, b, self.mini_batch_size))
             _, predicted_classes = number_output.data.max(1)
             predicted_classes=predicted_classes.view(-1,2)
-            predicted_classes.size()
             predictions= predicted_classes[:,0]<=predicted_classes[:,1]
-            target_labels = target.narrow(0, b, self.mini_batch_size)
+            target_labels = target.narrow(0, b//2, self.mini_batch_size//2).byte()
             nb_errors += torch.sum(predictions != target_labels)
         return float(nb_errors) * 100 / input_data.size(0)
