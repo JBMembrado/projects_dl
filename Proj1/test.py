@@ -27,3 +27,10 @@ my_model.trainer(train_input, train_target)
 print("Train error : %.1f%% \nTest error : %.1f%%" %
       (my_model.nb_errors(train_input, train_target),
        my_model.nb_errors(test_input, test_target)))
+
+""" Create and train model which identifies each number and then compares them """
+my_model_number = Net_number()
+my_model_number.trainer_number(train_input, train_classes)
+print("Train error : %.1f%% \nTest error : %.1f%%" %
+      (my_model_number.nb_errors_number(train_input, train_target),
+       my_model_number.nb_errors_number(test_input, test_target)))
