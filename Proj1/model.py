@@ -67,7 +67,7 @@ class Net_number(nn.Module):
         self.fc1 = nn.Linear(256, 256)
         self.fc2 = nn.Linear(256, 10)
         self.mini_batch_size = 100
-        self.criterion = nn.MSELoss() #crossentropy camarchepo
+        self.criterion = nn.CrossEntropyLoss() #crossentropy camarchepo
         self.nb_epoch = 25
         #self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
         
@@ -83,34 +83,18 @@ class Net_number(nn.Module):
         """
         lr=1e-4
         train_input=train_input.view(2000,1,14,14)
-        train_target=torch.empty(2000,10)
-        for i in range(2000):
-            for j in range(10):
-                if j == train_classes.view(2000,1)[i,0]:
-                    train_target[i,j]=1
-                else:
-                    train_target[i,j]=0
-        #c'est moche mais je crois que ca marche. à changer.
-
-        #train_target=train_target.long()
+        train_classes=train_classes.view(2000,1)[:,0]#converts to 1D for crossentropyloss
 
         for e in range(self.nb_epoch):
             sum_loss = 0
             for b in range(0, train_input.size(0), self.mini_batch_size):
                 output = self(train_input.narrow(0, b, self.mini_batch_size))
-                loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
+                loss = self.criterion(output, train_classes.narrow(0, b, self.mini_batch_size))
                 self.zero_grad()
                 loss.backward()
                 sum_loss = sum_loss + loss.item()
                 for p in self.parameters():
                     p.data.sub_(lr * p.grad.data)
-                
-#                output = self(train_input.narrow(0, b, self.mini_batch_size))
-#                loss = self.criterion(output, train_target.narrow(0, b, self.mini_batch_size))
-#                self.optimizer.zero_grad()
-#                loss.backward()
-#                sum_loss = sum_loss + loss.item()
-#                self.optimizer.step()
             print("Step %d : %f" % (e, sum_loss))
 
     # Test error
@@ -121,13 +105,18 @@ class Net_number(nn.Module):
         :param target: test target
         :return: number of errors
         """
-        nb_errors = 0
-        input_data=input_data.view(2000,1,14,14)
-        for b in range(0, input_data.size(0), self.mini_batch_size):
-            number_output = self(input_data.narrow(0, b, self.mini_batch_size))
-            _, predicted_classes = number_output.data.max(1)
-            predicted_classes=predicted_classes.view(-1,2)
-            predictions= predicted_classes[:,0]<=predicted_classes[:,1]
-            target_labels = target.narrow(0, b//2, self.mini_batch_size//2).byte()
-            nb_errors += torch.sum(predictions != target_labels)
+        n1 = self(input_data[:,0,:,:].view([1000,1,14,14])).argmax(1)
+        n2 = self(input_data[:,1,:,:].view([1000,1,14,14])).argmax(1)
+        pred = (n1 <= n2).type(torch.LongTensor)
+        nb_errors = torch.sum(pred != target)
+        
+#        nb_errors = 0
+#        input_data=input_data.view(2000,1,14,14)
+#        for b in range(0, input_data.size(0), self.mini_batch_size):
+#            number_output = self(input_data.narrow(0, b, self.mini_batch_size))
+#            _, predicted_classes = number_output.data.max(1)
+#            predicted_classes=predicted_classes.view(-1,2)
+#            predictions= predicted_classes[:,0]<=predicted_classes[:,1]
+#            target_labels = target.narrow(0, b//2, self.mini_batch_size//2).byte()
+#            nb_errors += torch.sum(predictions != target_labels)
         return float(nb_errors) * 100 / input_data.size(0)
