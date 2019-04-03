@@ -8,7 +8,7 @@ Created on Wed Mar  6 10:36:43 2019
 
 from torch.autograd import Variable
 import dlc_practical_prologue as prologue
-from model import Net
+from my_nets import *
 
 
 """ Load Data """
@@ -21,7 +21,7 @@ train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
 """ Create and train model """
-my_model = Net()
+my_model = NetWithBatchNorm()
 
 my_model.trainer(train_input, train_target)
 print("Train error : %.1f%% \nTest error : %.1f%%" %

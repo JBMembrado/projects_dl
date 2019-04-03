@@ -13,7 +13,7 @@ class Net(nn.Module):
         self.mini_batch_size = 100
         self.criterion = nn.CrossEntropyLoss()
         self.nb_epoch = 25
-        self.optimizer = torch.optim.SGD(self.parameters(), lr=1e-3, momentum=0.9)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
@@ -28,6 +28,8 @@ class Net(nn.Module):
         :param train_input: Training features
         :param train_target: Training labels
         """
+        self.train()
+
         for e in range(self.nb_epoch):
             sum_loss = 0
             for b in range(0, train_input.size(0), self.mini_batch_size):
@@ -47,6 +49,8 @@ class Net(nn.Module):
         :param target: test target
         :return: number of errors
         """
+        self.eval()
+
         nb_errors = 0
         for b in range(0, input_data.size(0), self.mini_batch_size):
             output = self(input_data.narrow(0, b, self.mini_batch_size))
