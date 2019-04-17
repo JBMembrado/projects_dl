@@ -20,12 +20,13 @@ train_input, train_target, train_classes, test_input, test_target, test_classes 
 train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
+print(test_input.shape)
+
 """ Create and train model """
-my_model = NetWithBatchNorm()
+my_model = NetWithWeightSharing()
 
 """ Create and train model which identifies each number and then compares them """
-my_model_number = NetNumber()
-my_model_number.trainer_nb(train_input, train_classes)
+my_model.trainer(train_input, train_target)
 print("Train error : %.1f%% \nTest error : %.1f%%" %
-      (my_model_number.nb_errors_nb(train_input, train_target),
-       my_model_number.nb_errors_nb(test_input, test_target)))
+      (my_model.nb_errors(train_input, train_target),
+       my_model.nb_errors(test_input, test_target)))

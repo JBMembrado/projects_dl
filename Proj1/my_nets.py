@@ -36,6 +36,38 @@ class NetWithBatchNorm(Net):
         return x
 
 
+class NetWithWeightSharing(Net):
+    def __init__(self):
+        super(NetWithWeightSharing, self).__init__()
+        self.nb_epoch = 25
+        self.sub_net = SubNetForSharing()
+        self.fc1 = nn.Linear(20, 2)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+
+    def forward(self, x):
+        x1 = self.sub_net(x[:, 0:1, :, :])
+        x2 = self.sub_net(x[:, 1:2, :, :])
+        x = torch.cat((x1, x2), 1)
+        x = self.fc1(x)
+        return x
+
+
+class SubNetForSharing(Net):
+    def __init__(self):
+        super(SubNetForSharing, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)
+        self.fc1 = nn.Linear(256, 256)
+        self.fc2 = nn.Linear(256, 10)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
+        x = F.relu(self.fc1(x.view(-1, 256)))
+        x = self.fc2(x)
+        return x
+
+
 class NetNumber(Net):
     def __init__(self):
         super(NetNumber, self).__init__()
