@@ -21,12 +21,19 @@ train_input, train_target = Variable(train_input), Variable(train_target)
 test_input, test_target = Variable(test_input), Variable(test_target)
 
 print(test_input.shape)
-
+print(train_classes.size())
 """ Create and train model """
-my_model = NetWithWeightSharing()
+my_model = NetWithWeightSharingAndAuxiliaryLoss()
 
 """ Create and train model which identifies each number and then compares them """
-my_model.trainer(train_input, train_target)
+my_model.trainer(train_input, train_target,train_classes)
+
 print("Train error : %.1f%% \nTest error : %.1f%%" %
       (my_model.nb_errors(train_input, train_target),
        my_model.nb_errors(test_input, test_target)))
+
+print("Train error : %.1f%% \nTest error : %.1f%%" %
+      (my_model.nb_errors(train_input, train_target),
+       my_model.nb_errors(test_input, test_target)))
+print(train_input.size())
+print(train_classes.size())

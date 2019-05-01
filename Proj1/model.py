@@ -2,7 +2,6 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -29,7 +28,7 @@ class Net(nn.Module):
         :param train_input: Training features
         :param train_target: Training labels
         """
-        self.train()
+        self.train() #mode to tell dropout/batchnorm
 
         for e in range(self.nb_epoch):
             sum_loss = 0
@@ -51,7 +50,7 @@ class Net(nn.Module):
         :param target: test target
         :return: number of errors
         """
-        self.eval()
+        self.eval() #mode to tell dropout/batchnorm
 
         nb_errors = 0
         for b in range(0, input_data.size(0), self.mini_batch_size):
