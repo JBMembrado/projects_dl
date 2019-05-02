@@ -22,6 +22,8 @@ class Linear(Module):
         self.out_features = out_features
         self.weight = Tensor(out_features, in_features)
 
+        self.loss = None
+
         self.bias = Tensor(out_features)
         self.x = Tensor(in_features)
         self.epsilon = 1e1
@@ -44,7 +46,8 @@ class Linear(Module):
         dl_dx = Functions.dtanh(self.x, target)
         return dl_dx
 
-    def init_loss
+    def init_loss(self, loss_function):
+        self.loss = loss_function
 
     def __call__(self, input):
         return self.forward(input)

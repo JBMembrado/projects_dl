@@ -17,10 +17,11 @@ class Sequential(Module):
     def __init__(self, *args):
 
         self.modules = []
-        for arg in args:
-            self.modules.append(arg)
+        loss_function = args[-1]
 
-        return
+        for idx, arg in enumerate(args):
+            self.modules.append(arg)
+            self.modules[idx].init_loss(loss_function)
 
     def forward(self, input):
 
