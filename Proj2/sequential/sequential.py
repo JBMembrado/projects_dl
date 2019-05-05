@@ -19,16 +19,24 @@ class Sequential(Module):
         self.modules = []
         loss_function = args[-1]
 
+
         for idx, arg in enumerate(args):
             self.modules.append(arg)
-            self.modules[idx].init_loss(loss_function)
+
+            if idx < len(args) - 1:
+                self.modules[idx].init_loss(loss_function)
+
 
     def forward(self, input):
 
         tmp = input
         for module in self.modules:
+            # print(module, tmp)
             tmp = module(tmp)
         return tmp
 
-    def backward(self):
+    def backward(self, target):
 
+        self.dl_ds = []
+        self.dl_dx = []
+        return

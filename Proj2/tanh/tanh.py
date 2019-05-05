@@ -7,6 +7,8 @@ Created on Wed Mar  27 10:36:43 2019
 """
 
 import torch
+from module import Module
+import numpy as np
 from torch import Tensor
 
 
@@ -16,10 +18,12 @@ class Tanh(Module):
         self.loss = None
 
     def init_loss(self, loss_function):
-        return self.loss = loss_function
+        self.loss = loss_function
 
     def forward(self, input):
-        return (np.exp(2*input) - 1)/(np.exp(2*input) + 1)
+        self.s = input
+        self.x = (np.exp(2*input) - 1)/(np.exp(2*input) + 1)
+        return self.x
 
     def backward(self):
         raise NotImplementedError
@@ -27,6 +31,11 @@ class Tanh(Module):
     def dactivation(self, input):
         return 1 - torch.pow(self.activation(input), 2)
 
+    def type(self):
+        return 'activation'
+
     def param(self):
         return []
 
+    def __call__(self, input):
+        return self.forward(input)

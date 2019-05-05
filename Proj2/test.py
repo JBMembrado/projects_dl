@@ -11,21 +11,26 @@ from torch import nn
 from torch import Tensor
 from module import Module
 from linear import Linear
+from tanh import Tanh
+from sequential import Sequential
+from mse import MSE
 from activation_functions import *
 import numpy as np
 
 class Net(Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = Linear(3, 5)
-        self.fc2 = Linear(5, 1)
+        self.lay1 = Linear(3, 5)
+        self.lay2 = Linear(5, 1)
 
         self.act1 = Tanh()
 
+        self.loss_function = MSE()
+
+        self.sequence = Sequential(self.lay1, self.act1, self.lay2, self.loss_function)
+
     def forward(self, x):
-        x = Functions.tanh(self.fc1(x.view(-1, 3)))
-        x = self.fc2(x)
-        return x
+        return self.sequence.forward(x.view(-1, 3))
 
 #    def backward(self, target):
 #        return
@@ -33,6 +38,15 @@ class Net(Module):
 
 test = Net()
 x_input = Tensor([1, -1, 2])
-print(test.forward(x_input))
+target = Tensor([[10.0]])
+test.forward(x_input)
 
-nn.Sequential
+# print(test.lay1.s)
+# print(test.act1.s)
+# print(test.act1.x)
+# print(test.lay2.x)
+# print(test.lay2.s)
+
+print(test.lay2.s)
+print(target)
+print(test.loss_function.calculate_loss(target))
