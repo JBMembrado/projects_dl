@@ -21,6 +21,9 @@ class Module(object):
     def backward(self):
         raise NotImplementedError
 
+    def optimize(self, eta):
+        return
+
     def param(self):
         return []
 

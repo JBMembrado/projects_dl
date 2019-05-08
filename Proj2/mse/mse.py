@@ -15,17 +15,23 @@ from torch import Tensor
 class MSE(Module):
 
     def __init__(self):
-        return
+        self.output = None
 
     def calculate_loss(self, target):
-        return (self.output - target).item()**2
+        return torch.mean((self.output - target)**2)
 
     def derivate_loss(self, target):
-        return 2*(self.output - target).item()
+        return 2*(self.output - target)
 
-    def forward(self, input):
-        self.output = input
+    def forward(self, output):
+        self.output = output
         return self.output
+
+    def backward(self, target):
+        if self.output is None:
+            raise Exception('Forward pass not done yet.')
+        return self.derivate_loss(target)
+
 
     def type(self):
         return 'loss'
@@ -33,5 +39,5 @@ class MSE(Module):
     def param(self):
         return []
 
-    def __call__(self, input):
-        return self.forward(input)
+    def __call__(self, x):
+        return self.forward(x)

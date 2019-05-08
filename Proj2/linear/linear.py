@@ -25,14 +25,15 @@ class Linear(Module):
         self.loss = None
 
         self.bias = Tensor(out_features)
-        self.epsilon = 1e1
+        self.epsilon = 1e-1
 
         self.x = Tensor(in_features)
         self.s = Tensor(out_features)
 
-        self.dl_dx = Tensor(out_features)
+        self.dl_dx = Tensor(in_features)
+        self.dl_ds = Tensor(out_features)
         self.dl_dw = Tensor(out_features, in_features)
-        self.dl_db = Tensor(in_features)
+        self.dl_db = Tensor(out_features)
 
         self.init_parameters()
 
@@ -41,14 +42,24 @@ class Linear(Module):
         self.bias = torch.randn(self.out_features)*self.epsilon
         self.x = torch.randn(self.in_features)*self.epsilon
 
-    def forward(self, input):
-        self.x = input
-        self.s = input.mm(self.weight.t()) + self.bias
+    def forward(self, x):
+        self.x = x
+        self.s = torch.mm(x, self.weight.t()) + self.bias
         return self.s
 
-    def backward(self):
-        dl_dx = Functions.dtanh(self.x, target)
-        return dl_dx
+    def backward(self, dl_ds):
+        self.dl_ds = dl_ds
+        self.dl_dx = torch.mm(self.dl_ds, self.weight)
+
+        self.dl_dw = torch.mm(self.dl_ds.t(), self.x)
+        self.dl_db = self.dl_ds.mean(0)
+
+        return self.dl_dx
+
+    def optimize(self, eta):
+        self.weight = self.weight - eta * self.dl_dw
+        self.bias = self.bias - eta * self.dl_db
+        return
 
     def init_loss(self, loss_function):
         self.loss = loss_function
@@ -56,6 +67,6 @@ class Linear(Module):
     def type(self):
         return 'layer'
 
-    def __call__(self, input):
-        return self.forward(input)
+    def __call__(self, x):
+        return self.forward(x)
 

@@ -27,16 +27,24 @@ class Sequential(Module):
                 self.modules[idx].init_loss(loss_function)
 
 
-    def forward(self, input):
+    def forward(self, ttt):
 
-        tmp = input
+        tmp = ttt
         for module in self.modules:
-            # print(module, tmp)
             tmp = module(tmp)
         return tmp
 
     def backward(self, target):
 
-        self.dl_ds = []
-        self.dl_dx = []
-        return
+        tmp = target
+
+        for k in range(len(self.modules)-1, -1, -1):
+            tmp = self.modules[k].backward(tmp)
+
+    def calculate_loss(self, target):
+        return self.modules[-1].calculate_loss(target)
+
+    def optimize(self, eta):
+
+        for module in self.modules:
+            module.optimize(eta)

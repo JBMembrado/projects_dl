@@ -17,36 +17,19 @@ from mse import MSE
 from activation_functions import *
 import numpy as np
 
-class Net(Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.lay1 = Linear(3, 5)
-        self.lay2 = Linear(5, 1)
-
-        self.act1 = Tanh()
-
-        self.loss_function = MSE()
-
-        self.sequence = Sequential(self.lay1, self.act1, self.lay2, self.loss_function)
-
-    def forward(self, x):
-        return self.sequence.forward(x.view(-1, 3))
-
-#    def backward(self, target):
-#        return
 
 
-test = Net()
-x_input = Tensor([1, -1, 2])
-target = Tensor([[10.0]])
-test.forward(x_input)
+test = Sequential(Linear(3, 5), Tanh(), Linear(5, 1), MSE())
+x_input = Tensor([1, -1, 2,2,3,4]).view(-1, 3)
+target = Tensor([[10.0], [1.0]])
 
-# print(test.lay1.s)
-# print(test.act1.s)
-# print(test.act1.x)
-# print(test.lay2.x)
-# print(test.lay2.s)
+# Training the Net
 
-print(test.lay2.s)
-print(target)
-print(test.loss_function.calculate_loss(target))
+eta = 0.01
+
+
+for i in range(50):
+    test.forward(x_input)
+    print(test.calculate_loss(target))
+    test.backward(target)
+    test.optimize(eta)
