@@ -8,7 +8,7 @@ Created on Wed Mar  27 10:36:43 2019
 
 import torch
 from module import Module
-import math
+import numpy as np
 
 
 class Tanh(Module):
@@ -21,7 +21,7 @@ class Tanh(Module):
         self.dl_ds = None
 
     def activation(self, s):
-        return math.tanh(s)
+        return np.tanh(s)
 
     def forward(self, s):
         self.s = s
