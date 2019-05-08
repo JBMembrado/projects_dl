@@ -6,16 +6,13 @@ Created on Wed Mar  27 10:36:43 2019
 @author: Darcane
 """
 
-import torch
-from torch import Tensor
-
 
 class Module(object):
 
     def __init__(self):
         self.loss = None
 
-    def forward(self, *input):
+    def forward(self):
         raise NotImplementedError
 
     def backward(self):
@@ -23,6 +20,9 @@ class Module(object):
 
     def optimize(self, eta):
         return
+
+    def type(self):
+        raise NotImplementedError
 
     def param(self):
         return []

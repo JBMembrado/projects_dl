@@ -8,25 +8,20 @@ Created on Wed Mar  27 10:36:43 2019
 
 import torch
 from module import Module
-import numpy as np
-from torch import Tensor
+import math
 
 
 class Tanh(Module):
 
     def __init__(self):
-        self.loss = None
         self.s = None
         self.x = None
 
         self.dl_dx = None
         self.dl_ds = None
 
-    def init_loss(self, loss_function):
-        self.loss = loss_function
-
     def activation(self, s):
-        return (np.exp(2*s) - 1)/(np.exp(2*s) + 1)
+        return math.tanh(s)
 
     def forward(self, s):
         self.s = s

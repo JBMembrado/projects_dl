@@ -8,8 +8,6 @@ Created on Wed Mar  27 10:36:43 2019
 
 import torch
 from module import Module
-import numpy as np
-from torch import Tensor
 
 
 class MSE(Module):
@@ -31,7 +29,6 @@ class MSE(Module):
         if self.output is None:
             raise Exception('Forward pass not done yet.')
         return self.derivate_loss(target)
-
 
     def type(self):
         return 'loss'

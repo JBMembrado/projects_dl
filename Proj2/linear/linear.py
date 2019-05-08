@@ -9,9 +9,6 @@ Created on Wed Mar  27 10:36:43 2019
 import torch
 from torch import Tensor
 from module import Module
-from activation_functions import *
-import numpy as np
-
 
 
 class Linear(Module):
@@ -21,8 +18,6 @@ class Linear(Module):
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Tensor(out_features, in_features)
-
-        self.loss = None
 
         self.bias = Tensor(out_features)
         self.epsilon = 1e-1
@@ -60,9 +55,6 @@ class Linear(Module):
         self.weight = self.weight - eta * self.dl_dw
         self.bias = self.bias - eta * self.dl_db
         return
-
-    def init_loss(self, loss_function):
-        self.loss = loss_function
 
     def type(self):
         return 'layer'
