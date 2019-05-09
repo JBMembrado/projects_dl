@@ -20,8 +20,8 @@ def generate_fake_samples(N = 1000):
     train_samples = 2*torch.rand(N, 2) - torch.ones(N, 2)
     test_samples = 2*torch.rand(N, 2) - torch.ones(N, 2)
 
-    train_labels = torch.ones(N)
-    test_labels = torch.ones(N)
+    train_labels = torch.ones(N, 1)
+    test_labels = torch.ones(N, 1)
 
     for k in range(N):
         if train_samples[k, 0]**2 + train_samples[k, 1]**2 > 1/(2*np.pi):
@@ -32,22 +32,45 @@ def generate_fake_samples(N = 1000):
     return train_samples, test_samples, train_labels, test_labels
 
 
-test = Sequential(Linear(3, 5), Tanh(), Linear(5, 1), MSE())
-x_input = Tensor([1, -1, 2,2,3,4]).view(-1, 3)
-target = Tensor([[10.0], [1.0]])
+test = Sequential(Linear(2, 10), Tanh(), Linear(10, 5), Tanh(), Linear(5, 1), MSE())
 
 # Training the Net
 
-eta = 0.01
+# Generating the train and test data
+train_samples, test_samples, train_target, test_target = generate_fake_samples(1000)
+
+target_coeff = 0.9
+train_target = train_target*target_coeff
+test_target = test_target*target_coeff
+
+n_samples, dim_input = train_samples.size()
+
+# Setting the number of gradient steps we want to do and the value of eta
+gradient_steps = 1000
+eta = 0.1
+
+# Gradient descent to train on the training data
+for step in range(gradient_steps):
+
+    test.forward(train_samples)
+    if step % 100 == 0:
+        print('For step', step, 'we have the loss', test.calculate_loss(train_target).item())
+        # print('dl_dw for layer 1', test.modules[0].dl_dx)
+
+    test.backward(train_target)
+    test.optimize(eta)
+
+# Once it is trained, we can try on the test data
+
+# Prediction with the trained network
+pred_target = test.forward(test_samples)
+
+pred_target = np.round(pred_target)
+test_target = np.round(test_target)
+
+# print(pred_target)
+
+# Number of errors by comparing the prediction and the true target labels
+print('Number of errors :', torch.sum(pred_target != test_target).item())
 
 
-# for i in range(50):
-#     test.forward(x_input)
-#     print(test.calculate_loss(target))
-#     test.backward(target)
-#     test.optimize(eta)
-
-a, b, c, d = generate_fake_samples(5)
-
-print(a)
-print(c)

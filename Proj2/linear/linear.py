@@ -20,7 +20,7 @@ class Linear(Module):
         self.weight = Tensor(out_features, in_features)
 
         self.bias = Tensor(out_features)
-        self.epsilon = 1e-1
+        self.epsilon = 1e-3
 
         self.x = Tensor(in_features)
         self.s = Tensor(out_features)
@@ -35,15 +35,18 @@ class Linear(Module):
     def init_parameters(self):
         self.weight = torch.randn(self.out_features, self.in_features)*self.epsilon
         self.bias = torch.randn(self.out_features)*self.epsilon
-        self.x = torch.randn(self.in_features)*self.epsilon
 
     def forward(self, x):
         self.x = x
+        # print('x ', x.shape)
+        # print('weight ', self.weight.shape)
         self.s = torch.mm(x, self.weight.t()) + self.bias
         return self.s
 
     def backward(self, dl_ds):
         self.dl_ds = dl_ds
+        # print('dl_ds ', dl_ds.shape)
+        # print('weight ', self.weight.shape)
         self.dl_dx = torch.mm(self.dl_ds, self.weight)
 
         self.dl_dw = torch.mm(self.dl_ds.t(), self.x)

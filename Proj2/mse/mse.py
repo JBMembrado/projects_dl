@@ -19,6 +19,7 @@ class MSE(Module):
         return torch.mean((self.output - target)**2)
 
     def derivate_loss(self, target):
+        # print('size of derivate loss', target)
         return 2*(self.output - target)
 
     def forward(self, output):
