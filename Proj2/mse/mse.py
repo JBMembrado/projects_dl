@@ -36,6 +36,3 @@ class MSE(Module):
 
     def param(self):
         return []
-
-    def __call__(self, x):
-        return self.forward(x)

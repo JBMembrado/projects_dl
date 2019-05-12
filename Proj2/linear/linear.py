@@ -20,13 +20,13 @@ class Linear(Module):
         self.weight = Tensor(out_features, in_features)
 
         self.bias = Tensor(out_features)
-        self.epsilon = 1e-3
+        self.epsilon = 1
 
-        self.x = Tensor(in_features)
-        self.s = Tensor(out_features)
+        self.x = None
+        self.s = None
+        self.dl_dx = None
+        self.dl_ds = None
 
-        self.dl_dx = Tensor(in_features)
-        self.dl_ds = Tensor(out_features)
         self.dl_dw = Tensor(out_features, in_features)
         self.dl_db = Tensor(out_features)
 
@@ -50,7 +50,7 @@ class Linear(Module):
         self.dl_dx = torch.mm(self.dl_ds, self.weight)
 
         self.dl_dw = torch.mm(self.dl_ds.t(), self.x)
-        self.dl_db = self.dl_ds.mean(0)
+        self.dl_db = self.dl_ds.sum(0)
 
         return self.dl_dx
 
@@ -61,7 +61,4 @@ class Linear(Module):
 
     def type(self):
         return 'layer'
-
-    def __call__(self, x):
-        return self.forward(x)
 
