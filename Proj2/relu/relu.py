@@ -11,7 +11,7 @@ from module import Module
 import numpy as np
 
 
-class Tanh(Module):
+class ReLU(Module):
 
     def __init__(self):
         self.s = None
@@ -21,7 +21,7 @@ class Tanh(Module):
         self.dl_ds = None
 
     def activation(self, s):
-        return np.tanh(s)
+        return s * (s > 0).type(torch.FloatTensor)
 
     def forward(self, s):
         self.s = s
@@ -37,7 +37,7 @@ class Tanh(Module):
         return self.dl_ds
 
     def dactivation(self, s):
-        return 1 - torch.pow(self.activation(s), 2)
+        return (s > 0).type(torch.FloatTensor)
 
     def type(self):
         return 'activation'

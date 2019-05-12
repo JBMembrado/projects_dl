@@ -6,10 +6,7 @@ Created on Wed Mar  27 10:36:43 2019
 @author: Darcane
 """
 
-import torch
-from torch import Tensor
 from module import Module
-import numpy as np
 
 
 class Sequential(Module):
@@ -17,15 +14,22 @@ class Sequential(Module):
     def __init__(self, *args):
 
         self.modules = []
-        loss_function = args[-1]
 
+        if len(args) < 1:
+            raise Exception("No module given when initialising class Sequential.")
+
+        if not hasattr(args[-1], 'type'):
+            raise Exception("The last argument has no method 'type'.")
+
+        if args[-1].type() != 'loss':
+            raise Exception("The last argument is not a loss function. Please set the loss function to be used as \
+                the last argument of the Sequential object")
 
         for idx, arg in enumerate(args):
+            if not isinstance(arg, Module):
+                raise Exception("Arg given in position {} is not an instance of a subclass of Module.".format(idx))
+
             self.modules.append(arg)
-
-            if idx < len(args) - 1:
-                self.modules[idx].init_loss(loss_function)
-
 
     def forward(self, ttt):
 

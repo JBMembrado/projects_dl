@@ -8,8 +8,6 @@ Created on Wed Mar  27 10:36:43 2019
 
 import torch
 from module import Module
-import numpy as np
-from torch import Tensor
 
 
 class MSE(Module):
@@ -21,6 +19,7 @@ class MSE(Module):
         return torch.mean((self.output - target)**2)
 
     def derivate_loss(self, target):
+        # print('size of derivate loss', target)
         return 2*(self.output - target)
 
     def forward(self, output):
@@ -32,12 +31,8 @@ class MSE(Module):
             raise Exception('Forward pass not done yet.')
         return self.derivate_loss(target)
 
-
     def type(self):
         return 'loss'
 
     def param(self):
         return []
-
-    def __call__(self, x):
-        return self.forward(x)
