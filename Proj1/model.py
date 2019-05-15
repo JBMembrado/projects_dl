@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+#original class net
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -22,7 +23,7 @@ class Net(nn.Module):
 
         # Training Function
 
-    def trainer(self, train_input, train_target):
+    def trainer(self, train_input, train_target, trainclasses):
         """
         Train the model on a training set
         :param train_input: Training features

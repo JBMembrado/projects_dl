@@ -37,3 +37,5 @@ print("Train error : %.1f%% \nTest error : %.1f%%" %
        my_model.nb_errors(test_input, test_target)))
 print(train_input.size())
 print(train_classes.size())
+
+print(sum(p.numel() for p in my_model.parameters() if p.requires_grad))

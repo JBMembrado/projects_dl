@@ -3,12 +3,11 @@ from torch import nn
 from torch.nn import functional as F
 from model import Net
 
-
 class NetWithDropout(Net):
     def __init__(self):
         super(NetWithDropout, self).__init__()
-        self.dropout = nn.Dropout2d(p=0.2)
-        self.nb_epoch = 100
+        self.dropout = nn.Dropout2d(p=0.15)
+        self.nb_epoch = 25
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
@@ -32,9 +31,8 @@ class NetWithBatchNorm(Net):
         x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
         x = self.batch_norm(x)
         x = F.relu(self.fc1(x.view(-1, 256)))
-        x = self.fc2(x)
+        x = self.fc2(x)#pas de batchnorm ici, alors qu'on avait un dropout a cet endroit
         return x
-
 
 class NetWithWeightSharing(Net):
     def __init__(self):
@@ -59,12 +57,13 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
         super(NetWithWeightSharingAndAuxiliaryLoss, self).__init__()
         self.nb_epoch = 25
         self.sub_net = SubNetForSharing()
-        self.fc1 = nn.Linear(20, 20)
-        self.fc2 = nn.Linear(20, 2)
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        #self.fc1 = nn.Linear(20, 20)
+        #self.fc2 = nn.Linear(20, 2)
+        self.fc1 = nn.Linear(20, 2)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
         self.x1 = None
         self.x2 = None
-        self.auxfactor = 0.5
+        self.auxfactor = 0.8
 
     def forward(self, x):
         # we take the slices 0:1 and 1:2 so that the vector is still of dimension 4 and does not go to dimension 3.
@@ -72,7 +71,6 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
         self.x2 = self.sub_net(x[:, 1:2, :, :])
         x = torch.cat((self.x1, self.x2), 1)
         x = self.fc1(x)
-        x = self.fc2(x)
         return x
 
     def trainer(self, train_input, train_target, train_classes):
@@ -97,6 +95,38 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
 class SubNetForSharing(Net):
     def __init__(self):
         super(SubNetForSharing, self).__init__()
+
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3)
+        self.conv2 = nn.Conv2d(16,32,kernel_size=5)
+        self.fc1 = nn.Linear(128, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.fc1(x.view(-1, 128)))
+        x = self.fc2(x)
+
+        return x
+
+class NetWithDropoutWSAL(Net):
+    def __init__(self):
+        super(NetWithDropout, self).__init__()
+        self.dropout = nn.Dropout2d(p=0.2)
+        self.nb_epoch = 100
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
+        x = self.dropout(x)
+        x = F.relu(self.fc1(x.view(-1, 256)))
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return x
+
+class SubNetForSharingDropout(Net):
+    def __init__(self):
+        super(SubNetForSharing, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3)
         self.fc1 = nn.Linear(256, 256)
@@ -105,6 +135,23 @@ class SubNetForSharing(Net):
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
         x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
+        x = F.relu(self.fc1(x.view(-1, 256)))
+        x = self.fc2(x)
+        return x
+
+
+class NetWithBatchNormWSAL(Net):
+    def __init__(self):
+        super(NetWithBatchNorm, self).__init__()
+        self.nb_epoch = 25
+        self.batch_norm = nn.BatchNorm2d(64)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        with torch.no_grad():
+            for p in self.parameters(): p.normal_(0, 0.01)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
+        x = self.batch_norm(x)
         x = F.relu(self.fc1(x.view(-1, 256)))
         x = self.fc2(x)
         return x
@@ -213,3 +260,4 @@ class BigNet(Net):
             target_labels = target.narrow(0, b, self.mini_batch_size)
             nb_errors += torch.sum(predictions != target_labels)
         return float(nb_errors) * 100 / input_data.size(0)
+
