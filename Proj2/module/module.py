@@ -3,6 +3,8 @@
 """
 Created on Wed Mar  27 10:36:43 2019
 
+Super class, defining the architecture of modules
+
 @author: Darcane
 """
 
@@ -22,11 +24,8 @@ class Module(object):
         raise NotImplementedError
 
     def optimize(self, eta):
-        return
+        return NotImplementedError
 
     def type(self):
         raise NotImplementedError
-
-    def param(self):
-        return []
 
