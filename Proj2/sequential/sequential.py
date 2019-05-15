@@ -3,6 +3,8 @@
 """
 Created on Wed Mar  27 10:36:43 2019
 
+Module containing a list of modules. This form a complete net.
+
 @author: Darcane
 """
 
@@ -32,23 +34,26 @@ class Sequential(Module):
             self.modules.append(arg)
 
     def forward(self, ttt):
-
         tmp = ttt
+        # forward all the modules
         for module in self.modules:
             tmp = module(tmp)
         return tmp
 
     def backward(self, target):
-
         tmp = target
-
-        for k in range(len(self.modules)-1, -1, -1):
+        # backward all the modules
+        for k in range(len(self.modules) - 1, -1, -1):
             tmp = self.modules[k].backward(tmp)
 
     def calculate_loss(self, target):
+        # calculate the loss (last module)
         return self.modules[-1].calculate_loss(target)
 
     def optimize(self, eta):
-
+        # Optimize all modules
         for module in self.modules:
             module.optimize(eta)
+
+    def type(self):
+        return 'net'
