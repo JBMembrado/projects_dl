@@ -57,9 +57,8 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
         super(NetWithWeightSharingAndAuxiliaryLoss, self).__init__()
         self.nb_epoch = 25
         self.sub_net = SubNetForSharing()
-        #self.fc1 = nn.Linear(20, 20)
-        #self.fc2 = nn.Linear(20, 2)
-        self.fc1 = nn.Linear(20, 2)
+        self.fc1 = nn.Linear(20, 20)
+        self.fc2 = nn.Linear(20, 2)
         self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
         self.x1 = None
         self.x2 = None
@@ -70,7 +69,8 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
         self.x1 = self.sub_net(x[:, 0:1, :, :])
         self.x2 = self.sub_net(x[:, 1:2, :, :])
         x = torch.cat((self.x1, self.x2), 1)
-        x = self.fc1(x)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
         return x
 
     def trainer(self, train_input, train_target, train_classes):
