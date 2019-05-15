@@ -96,15 +96,15 @@ class SubNetForSharing(Net):
     def __init__(self):
         super(SubNetForSharing, self).__init__()
 
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=3)
-        self.conv2 = nn.Conv2d(16,32,kernel_size=5)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5)
+        self.conv2 = nn.Conv2d(16,32,kernel_size=2)
         self.fc1 = nn.Linear(128, 128)
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
 
         x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
-        x = F.relu(self.conv2(x))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
         x = F.relu(self.fc1(x.view(-1, 128)))
         x = self.fc2(x)
 
