@@ -59,7 +59,7 @@ class NetWithWeightSharingAndAuxiliaryLoss(Net):
         self.sub_net = SubNetForSharing()
         self.fc1 = nn.Linear(20, 20)
         self.fc2 = nn.Linear(20, 2)
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=5e-3)
         self.x1 = None
         self.x2 = None
         self.auxfactor = 0.8
