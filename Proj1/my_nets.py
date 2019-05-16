@@ -169,7 +169,7 @@ class NetNumber(Net):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3)
         self.fc1 = nn.Linear(256, 256)
         self.fc2 = nn.Linear(256, 10)
-        self.nb_epoch = 5
+        self.nb_epoch = 25
         self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
 
     def forward(self, x):
@@ -179,13 +179,13 @@ class NetNumber(Net):
         x = self.fc2(x)
         return x
 
-    def trainer_nb(self, train_input, train_classes):
+    def trainer_nb(self, train_input, train_target, train_classes):
         """
         """
         train_input = train_input.view(2000, 1, 14, 14)
         train_classes = train_classes.view(2000)
 
-        self.trainer(train_input, train_classes)
+        self.trainer(train_input,train_classes, train_classes)
 
     # Test error
     def nb_errors_nb(self, input_data, target):
@@ -202,67 +202,5 @@ class NetNumber(Net):
         predictions = predicted_classes[:, 0] <= predicted_classes[:, 1]
         target_labels = target
         nb_errors = torch.sum(predictions.type(torch.LongTensor) != target_labels)
-        return float(nb_errors) * 100 / input_data.size(0)
-
-
-class SmallNet(Net):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv = nn.Conv2d(1, 64, kernel_size=5)
-        self.fc1 = nn.Linear(256, 256)
-        self.fc2 = nn.Linear(256, 10)
-
-        self.mini_batch_size = 100
-        self.criterion = nn.CrossEntropyLoss()
-        self.nb_epoch = 25
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
-
-    def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
-        x = F.relu(self.fc1(x.view(-1, 256)))
-        x = self.fc2(x)
-        return x
-
-    def Smalltrainer(self, train_input, train_classes):
-        train_input = train_input.view(2000, 1, 14, 14)
-        train_classes = train_classes.view(2000)
-
-        self.trainer(train_input, train_classes)
-
-
-class BigNet(Net):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.fc1 = nn.Linear(20, 2)
-
-        self.mini_batch_size = 100
-        self.criterion = nn.CrossEntropyLoss()
-        self.nb_epoch = 25
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
-
-    def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
-        x = F.relu(self.fc1(x.view(-1, 256)))
-        x = self.fc2(x)
-        return x
-
-    def BigTrainer(self, train_input, train_target):
-        self.trainer(train_input, train_target)
-
-    def nb_errors(self, input_data, target):
-        """
-        Compute the number of error of the model on a test set
-        :param input_data: test features
-        :param target: test target
-        :return: number of errors
-        """
-        self.eval()  # mode to tell dropout/batchnorm
-
-        nb_errors = 0
-        for b in range(0, input_data.size(0), self.mini_batch_size):
-            output = self(input_data.narrow(0, b, self.mini_batch_size))
-            predictions = output.argmax(1)
-            target_labels = target.narrow(0, b, self.mini_batch_size)
-            nb_errors += torch.sum(predictions != target_labels)
         return float(nb_errors) * 100 / input_data.size(0)
 
