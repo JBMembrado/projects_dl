@@ -10,11 +10,14 @@ class NetWithDropout(Net):
         self.nb_epoch = 25
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
+        x = self.dropout(x)
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
         x = self.dropout(x)
         x = F.relu(self.fc1(x.view(-1, 256)))
         x = self.dropout(x)
         x = self.fc2(x)
+
         return x
 
 
@@ -28,10 +31,12 @@ class NetWithBatchNorm(Net):
             for p in self.parameters(): p.normal_(0, 0.01)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv(x), kernel_size=5, stride=5))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
         x = self.batch_norm(x)
         x = F.relu(self.fc1(x.view(-1, 256)))
-        x = self.fc2(x)#pas de batchnorm ici, alors qu'on avait un dropout a cet endroit
+        x = self.fc2(x)
+
         return x
 
 class NetWithWeightSharing(Net):
