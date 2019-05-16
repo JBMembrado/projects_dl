@@ -23,7 +23,7 @@ class NetWithBatchNorm(Net):
         super(NetWithBatchNorm, self).__init__()
         self.nb_epoch = 25
         self.batch_norm = nn.BatchNorm2d(64)
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         with torch.no_grad():
             for p in self.parameters(): p.normal_(0, 0.01)
 
