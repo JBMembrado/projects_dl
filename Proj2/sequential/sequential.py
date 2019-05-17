@@ -43,8 +43,8 @@ class Sequential(Module):
     def backward(self, target):
         tmp = target
         # backward all the modules
-        for k in range(len(self.modules) - 1, -1, -1):
-            tmp = self.modules[k].backward(tmp)
+        for k in range(len(self.modules) - 1, -1, -1):#decreasing range, to start by the last module
+            tmp = self.modules[k].backward(tmp)#tmp will change at every new layer.
 
     def calculate_loss(self, target):
         # calculate the loss (last module)

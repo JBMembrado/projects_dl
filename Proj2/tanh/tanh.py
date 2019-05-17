@@ -40,7 +40,7 @@ class Tanh(Module):
 
     def dactivation(self, s):
         # activation'
-        return 1 - torch.pow(self.activation(s), 2)
+        return 1 - torch.pow(self.activation(s), 2)#the derivative of tanh is 1-tanh^2
 
     def optimize(self, eta):
         # No parameters here, do nothing

@@ -26,7 +26,7 @@ def generate_fake_samples(n=1000):
     :param n: number of samples to generate
     :return: train_samples, test_samples, train_labels, test_labels
     """
-    train_samples = torch.rand(n, 2)
+    train_samples = torch.rand(n, 2)#(n,2) tensor of values between 0 and 1
     test_samples = torch.rand(n, 2)
     train_labels = torch.rand(n, 2)
     test_labels = torch.rand(n, 2)
@@ -52,7 +52,7 @@ eta = 0.01 / n_samples
 # Gradient descent to train on the training data
 for step in range(gradient_steps):
     test(train_x)
-    if step % 100 == 0:
+    if step % 100 == 0:#(just to have less things displayed)
         print('For step', step, 'we have the loss', test.calculate_loss(train_target).item())
     test.backward(train_target)
     test.optimize(eta)
